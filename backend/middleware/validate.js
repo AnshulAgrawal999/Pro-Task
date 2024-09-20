@@ -12,35 +12,27 @@ const passwordCheck = ( req , res , next ) =>
 
     if ( userpassword.length < 8 ) 
     {
-          res.status(200).send( { "msg" : "password should be at least 8 characters long" } )  ;
+        return res.status(400).send( { "msg" : "password should contain atleast 8 characters" } )  ;
     }
-    else
+
+    if ( !hasNumber ) 
     {
-      if ( hasNumber ) 
-      {
-          if ( hasUpperCase ) 
-          {
-            if ( hasSpecialChar ) 
-            {
-                next()  ;
-            }
-            else
-            {
-                res.status(200).send( { "msg" : "password should contain at least one special character" } )  ;
-            }  
-          }
-          else
-          {
-            res.status(200).send( { "msg" : "password should contain at least one uppercase character" } )  ;
-          }  
-      }
-      else
-      {
-        res.status(200).send( { "msg" : "password should atleast contain one number" } )  ;
-      }     
+        return res.status(400).send( { "msg" : "password should contain atleast one number" } )  ;
     }
     
-  } catch (error) {
+    if ( !hasUpperCase ) 
+    {
+        return res.status(400).send( { "msg" : "password should contain at least one uppercase character" } )  ;
+    }
+
+    if ( !hasSpecialChar ) 
+    {
+        return res.status(400).send( { "msg" : "password should contain at least one special character" } )  ;
+    }
+      
+    next()  ;
+  } 
+  catch (error) {
     res.status(400).send( { "error" : error } )  ;
   }
     

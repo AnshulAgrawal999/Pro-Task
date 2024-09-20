@@ -15,28 +15,31 @@ const auth = async ( req , res , next ) => {
 
         const accessToken = req.headers.authorization  ;
 
+        if ( !accessToken ) 
+        {
+            return res.status( 401 ).send( { msg: "Token is Missing!" } )  ;
+        }
+
         const item = await BlackListModel.findOne( { "token" : accessToken } )  ;
 
-        if ( !item )
+        if ( item )
         {
-            jwt.verify( accessToken , process.env.accessSecretKey , function( err , decoded ) 
-            {
-                if ( !err )
-                {
-                    req.body.useremail = decoded.useremail  ;
-
-                    next()  ;
-                }
-                else
-                {
-                    res.status(200).send( { "error" : err } )  ;
-                }
-            });
+            return  res.status(401).send( { "msg" : "User is logged out" } )  ;
         }
-        else
+
+        jwt.verify( accessToken , process.env.accessSecretKey , function( err , decoded ) 
         {
-            res.status(200).send( { "msg" : "You are not logged in" } )  ;
-        }      
+            if ( err )
+            {
+                return res.status(401).send( { "error" : err } )  ;
+            }
+
+            req.body.useremail = decoded.useremail  ;
+
+            next()  ;
+           
+        });
+           
         
     } catch (error) {
         res.status(400).send( { "error" : error } )  ;
