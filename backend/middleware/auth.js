@@ -17,7 +17,7 @@ const auth = async ( req , res , next ) => {
 
         if ( !accessToken ) 
         {
-            return res.status( 401 ).send( { msg: "Token is Missing!" } )  ;
+            return res.status( 401 ).send( { msg: "No Token Provided" } )  ;
         }
 
         const item = await BlackListModel.findOne( { "token" : accessToken } )  ;
