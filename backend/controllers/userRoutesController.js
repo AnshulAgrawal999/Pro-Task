@@ -24,14 +24,14 @@ const registerUser = async ( req , res ) => {
 
         if( user )
         {   
-            return res.status(400).send( { "msg" : "Account with this email already exists!" } )  ;            
+            return res.status( 400 ).send( { "msg" : "Account with this email already exists!" } )  ;            
         }
 
         bcrypt.hash( userpassword , 3 , async function ( err , hash ) {
 
             if( err )
             {
-                return res.status(400).send( { "error" : err } )  ;
+                return res.status( 500 ).send( { "error" : err } )  ;
             }
             
             const newuser = new UserModel( req.body )  ;
@@ -44,8 +44,8 @@ const registerUser = async ( req , res ) => {
             
         })  ;
         
-    } catch (error) {
-        res.status(400).send( { "error" : error } )  ;
+    } catch ( error ) {
+        res.status( 500 ).send( { "error" : error } )  ;
     }
 }
 
@@ -58,14 +58,14 @@ const loginUser = async ( req , res )=> {
 
         if( !user )
         {
-            return res.status(401).send( { "msg" : "No user account found with this email" } )  ;
+            return res.status( 401 ).send( { "msg" : "No user account found with this email" } )  ;
         }
 
         bcrypt.compare( userpassword , user.userpassword , function ( err , result ) {
 
             if( err )
             {
-                return res.status(401).send( { "error" : err } )  ;
+                return res.status( 500 ).send( { "error" : err } )  ;
             }
 
             if( result )
@@ -74,15 +74,15 @@ const loginUser = async ( req , res )=> {
 
                 const refreshToken = jwt.sign( { useremail } , process.env.refreshSecretKey , { expiresIn: '1d' } )  ;
 
-                return res.status(200).send( { "msg" :"Login successful!" , accessToken , refreshToken } )  ;
+                return res.status( 200 ).send( { "msg" :"Login successful!" , accessToken , refreshToken } )  ;
             }
            
-            res.status(401).send( { "msg" : "Incorrect password!" } )  ;
+            res.status( 401 ).send( { "msg" : "Incorrect password!" } )  ;
             
         });
        
-    } catch (error) {
-        res.status(400).send( { "error" : error } )  ;
+    } catch ( error ) {
+        res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
 
@@ -92,10 +92,10 @@ const logoutUser = async ( req , res ) => {
 
         await BlackListModel.insertMany( [ { "token" : accessToken } , { "token" : refreshToken } ] )  ;
 
-        res.status(200).send( { "msg" : "User has been logged out" }  )  ;
+        res.status( 200 ).send( { "msg" : "User has been logged out" }  )  ;
         
-    } catch (error) {
-        res.status(400).send( { "error" : error } )  ;
+    } catch ( error ) {
+        res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
 
@@ -107,13 +107,13 @@ const changePassword = async ( req , res ) => {
 
         if( !user )
         {
-            return  res.status(401).send( { "msg" : "Incorrect email" } )  ;  
+            return  res.status( 401 ).send( { "msg" : "Incorrect email" } )  ;  
         }
         
         bcrypt.compare( olduserpassword , user.userpassword , async function( err , result ) {
             if( err )
             {
-                return res.status(401).send( { "error" : err } )  ;
+                return res.status( 500 ).send( { "error" : err } )  ;
             }
 
             if( result )
@@ -121,7 +121,7 @@ const changePassword = async ( req , res ) => {
                 bcrypt.hash( newuserpassword , 3 , async function ( err , hash ) {
                     if( err )
                     {
-                        return res.status(401).send( { "error" : err } )  ;
+                        return res.status( 500 ).send( { "error" : err } )  ;
                     }
                     else
                     {
@@ -129,17 +129,17 @@ const changePassword = async ( req , res ) => {
 
                         await BlackListModel.insertMany( [ { "token" : accessToken } , { "token" : refreshToken } ] )  ;
 
-                        return res.status(200).send( { "msg" : "Password has been updated! User has been logged out" }  )  ;
+                        return res.status( 200 ).send( { "msg" : "Password has been updated! User has been logged out" }  )  ;
                     }
                 })  ;
             }
             
-            res.status(401).send( { "msg" : "Incorrect password" } )  ;
+            res.status( 401 ).send( { "msg" : "Incorrect password" } )  ;
             
         })  ;
-
-    } catch (error) {
-        res.status(400).send( { "error" : error } )  ;
+ 
+    } catch ( error ) {
+        res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
 
@@ -158,7 +158,7 @@ const deleteAccount = async ( req , res ) => {
         bcrypt.compare( userpassword , user.userpassword , async function(err, result) {
             if( err )
             {
-                return res.status( 401 ).send( { "error" : err } )  ;
+                return res.status( 500 ).send( { "error" : err } )  ;
             }
 
             if( result )
@@ -167,15 +167,15 @@ const deleteAccount = async ( req , res ) => {
                 
                 await BlackListModel.insertMany( [ { "token" : accessToken } , { "token" : refreshToken } ] )  ;
 
-                return res.status(200).send( { "msg" : "Accout has been deleted and user has been logged out" , user }  )  ;
+                return res.status( 200 ).send( { "msg" : "Accout has been deleted and user has been logged out" , user }  )  ;
             }
             
-            res.status(401).send( { "msg" : "Incorrect password" } )  ;
+            res.status( 401 ).send( { "msg" : "Incorrect password" } )  ;
             
         })  ;
 
-    } catch (error) {
-        res.status(400).send( { "error" : error } )  ;
+    } catch ( error ) {
+        res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
 
@@ -191,14 +191,14 @@ const refreshToken = async ( req , res ) => {
 
         if ( item1 || item2 )
         {
-            return res.status(401).send( { "msg" : "User is logged out" } )  ;   
+            return res.status( 401 ).send( { "msg" : "User is logged out" } )  ;   
         }
        
         jwt.verify( refreshToken , process.env.refreshSecretKey , function( error ) 
         {
             if ( error )
             {
-                return res.status(401).send( { "error" : error } )  ;
+                return res.status( 500 ).send( { "error" : error } )  ;
             }
 
             jwt.verify( accessToken , process.env.accessSecretKey , function( err , decoded ) 
@@ -209,19 +209,19 @@ const refreshToken = async ( req , res ) => {
                     {
                         const newaccessToken = jwt.sign( { 'useremail' : decoded.useremail } , process.env.accessSecretKey , { expiresIn: '100m' } )   ;
             
-                        return res.status(200).send( { "newaccessToken" : newaccessToken } )  ;
+                        return res.status( 200 ).send( { "newaccessToken" : newaccessToken } )  ;
                     }
                         
-                    return res.status(401).send( { "error" : err } )  ;    
+                    return res.status( 500 ).send( { "error" : err } )  ;    
                 }
                 
-                res.status(401).send( { "msg" : "Previous accessToken is not expired" } )  ;
+                res.status( 400 ).send( { "msg" : "Previous accessToken still active" } )  ;
                 
             });
         });
 
-    } catch (error) {
-        res.status(400).send( { "error" : error } )  ;
+    } catch ( error ) {
+        res.status( 500 ).send( { "error" : error } )  ;
     }
 }
 

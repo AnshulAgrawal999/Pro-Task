@@ -24,14 +24,14 @@ const auth = async ( req , res , next ) => {
 
         if ( item )
         {
-            return  res.status(401).send( { "msg" : "User is logged out" } )  ;
+            return  res.status( 401 ).send( { "msg" : "User is logged out" } )  ;
         }
 
         jwt.verify( accessToken , process.env.accessSecretKey , function( err , decoded ) 
         {
             if ( err )
             {
-                return res.status(401).send( { "error" : err } )  ;
+                return res.status( 500 ).send( { "error" : err } )  ;
             }
 
             req.body.useremail = decoded.useremail  ;
@@ -41,8 +41,8 @@ const auth = async ( req , res , next ) => {
         });
            
         
-    } catch (error) {
-        res.status(400).send( { "error" : error } )  ;
+    } catch ( error ) {
+        res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
 
