@@ -26,7 +26,7 @@ app.get( '/' , ( req , res ) => {
 
     try {
         res.status( 200 ).send( { 'msg' : 'Welcome To HomePage, this is Pro Task App base url' } )  ;
-    } catch (error) {
+    } catch ( error ) {
         res.status( 500 ).send( { 'error' : error } )  ;
     }
    
@@ -44,7 +44,7 @@ app.listen( PORT , async ()=>{
 
         console.log( 'server is connected to DB' )  ;
 
-    } catch (error) {
+    } catch ( error ) {
         
         console.log( { error } )  ;
     }

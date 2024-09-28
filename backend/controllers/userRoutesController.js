@@ -1,4 +1,4 @@
-const bcrypt = require( 'bcrypt' ) ;
+const bcrypt = require( 'bcrypt' )  ;
 
 const jwt  = require( 'jsonwebtoken' )  ;
 
@@ -58,7 +58,7 @@ const loginUser = async ( req , res )=> {
 
         if( !user )
         {
-            return res.status( 401 ).send( { "msg" : "No user account found with this email" } )  ;
+            return res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;
         }
 
         bcrypt.compare( userpassword , user.userpassword , function ( err , result ) {
@@ -107,7 +107,7 @@ const changePassword = async ( req , res ) => {
 
         if( !user )
         {
-            return  res.status( 401 ).send( { "msg" : "Incorrect email" } )  ;  
+            return  res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;  
         }
         
         bcrypt.compare( olduserpassword , user.userpassword , async function( err , result ) {
@@ -152,10 +152,10 @@ const deleteAccount = async ( req , res ) => {
 
         if( !user )
         {
-            return  res.status(401).send( { "msg" : "Incorrect email" } )  ;  
+            return  res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;  
         }
         
-        bcrypt.compare( userpassword , user.userpassword , async function(err, result) {
+        bcrypt.compare( userpassword , user.userpassword , async function( err , result ) {
             if( err )
             {
                 return res.status( 500 ).send( { "error" : err } )  ;
@@ -226,4 +226,40 @@ const refreshToken = async ( req , res ) => {
 }
 
 
-module.exports = { registerUser , loginUser , logoutUser , changePassword , deleteAccount , refreshToken }  ;
+// Get All Users List - for Task Assigning Purpose - Authenticated Route
+
+const getAllUsers = async ( req , res ) => {
+    try {
+      const users = await UserModel.find()  ;
+  
+      res.status( 200 ).send( users )  ;
+
+    } catch ( error ) {
+      
+      res.status( 500 ).send( { "error" : error } )  ;
+    }
+}
+  
+
+// Get a Single User Data - Authenticated Route
+
+const getUser = async ( req , res ) => {
+    try {
+      const { requestemail } = req.body  ;
+  
+      const user = await UserModel.findOne( { 'useremail' : requestemail } )  ;
+
+      if( !user )
+      {
+         return res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;
+      }
+  
+      res.status( 200 ).send( user )  ;
+
+    } catch ( error ) {
+      
+      res.status( 500 ).send( { "error" : error } )  ;
+    }
+  }
+
+module.exports = { registerUser , loginUser , logoutUser , changePassword , deleteAccount , refreshToken , getAllUsers , getUser }  ;
