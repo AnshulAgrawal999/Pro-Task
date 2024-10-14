@@ -70,19 +70,27 @@ const getAllNotes = async ( req , res ) => {
     } 
 }
 
+// Get Note
+
 const getNote = async ( req , res ) => {
     try {
 
-        const { useremail } = req.body  ;
+        const { noteId } = req.body  ;
 
-        const notes = await NoteModel.find( { useremail } )  ;
+        const note = await NoteModel.findById( noteId )  ;
 
-        res.status( 200 ).send( notes )  ;
+        if( !note )
+        {
+            return res.status( 404 ).send( { "msg" : "No note found" } )  ;
+        }
+
+        res.status( 200 ).send( note )  ;
 
     } catch (error) {
-        res.status( 400 ).send( { error } )  ;
+
+        res.status( 500 ).send( { error } )  ;
     } 
 }
 
 
-module.exports = { addNote , getAllNotes }  ;
+module.exports = { addNote , getAllNotes , getNote }  ;
