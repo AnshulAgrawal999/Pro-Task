@@ -16,7 +16,7 @@ userRouter.post( '/login' , loginUser )  ;
 
 userRouter.post( '/logout' , auth , logoutUser )   ;
 
-userRouter.patch( '/changepassword' , auth , changePassword )   ;
+userRouter.patch( '/changepassword' , auth , passwordCheck , changePassword )   ;
 
 userRouter.delete( '/deleteaccount' , auth , deleteAccount )  ;
 

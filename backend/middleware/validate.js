@@ -12,22 +12,22 @@ const passwordCheck = ( req , res , next ) =>
 
     if ( userpassword.length < 8 ) 
     {
-        return res.status( 400 ).send( { "msg" : "password should contain atleast 8 characters" } )  ;
+        return res.status( 401 ).send( { "msg" : "password should contain atleast 8 characters" } )  ;
     }
 
     if ( !hasNumber ) 
     {
-        return res.status( 400 ).send( { "msg" : "password should contain atleast one number" } )  ;
+        return res.status( 401 ).send( { "msg" : "password should contain atleast one number" } )  ;
     }
     
     if ( !hasUpperCase ) 
     {
-        return res.status( 400 ).send( { "msg" : "password should contain at least one uppercase character" } )  ;
+        return res.status( 401 ).send( { "msg" : "password should contain at least one uppercase character" } )  ;
     }
 
     if ( !hasSpecialChar ) 
     {
-        return res.status( 400 ).send( { "msg" : "password should contain at least one special character" } )  ;
+        return res.status( 401 ).send( { "msg" : "password should contain at least one special character" } )  ;
     }
       
     next()  ;

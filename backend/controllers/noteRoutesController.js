@@ -5,7 +5,9 @@ const { UserModel } = require( '../models/UserModel' )  ;
 // Create New Note
 
 const addNote = async (req, res) => {
+
     try {
+
       const { title , description , useremail } = req.body  ;
 
       const user = await UserModel.findOne( { useremail } )  ;
@@ -32,24 +34,39 @@ const addNote = async (req, res) => {
   
       res.status( 201 ).send( { "msg" : "Note saved successfully" , note } )  ;
 
-    } catch (error) {
-      console.error("Creating Project Error :", error);
-      res.status(500).json({ msg: "Creating Projects Error" });
+    } catch ( error ) {
+
+      res.status( 500 ).send( { "error" : error } )  ;
     }
   }
 
 
+// Get All Notes
+
 const getAllNotes = async ( req , res ) => {
     try {
 
-        const { userID } = req.body  ;
+        const { useremail } = req.body  ;
 
-        const notes = await NoteModel.find( { 'userID.useremail' : userID.useremail } )  ;
+        const user = await UserModel.findOne( { useremail } )  ;
+
+        if( !user )
+        {
+            return res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;
+        }
+
+        const notes = await UserModel.findById( user._id ).populate( "note" ).noteObjectId  ;
+
+        if( !notes )
+        {
+            return res.status( 404 ).send( { "msg" : "No notes found" } )  ;
+        }
 
         res.status( 200 ).send( notes )  ;
 
-    } catch (error) {
-        res.status( 400 ).send( { error } )  ;
+    } catch ( error ) {
+
+        res.status( 500 ).send( { error } )  ;
     } 
 }
 

@@ -21,6 +21,11 @@ const registerUser = async ( req , res ) => {
 
         const { useremail , userpassword } = req.body  ;
 
+        if ( !useremail ) 
+        {
+            return res.status( 401 ).send( { msg: "No email provided" } )  ;
+        }
+
         const user = await UserModel.findOne( { useremail } )  ;
 
         if( user )
@@ -46,6 +51,7 @@ const registerUser = async ( req , res ) => {
         })  ;
         
     } catch ( error ) {
+
         res.status( 500 ).send( { "error" : error } )  ;
     }
 }
@@ -56,6 +62,11 @@ const loginUser = async ( req , res ) => {
 
     try {
         const { useremail , userpassword  } = req.body  ;
+
+        if ( !useremail ) 
+        {
+            return res.status( 401 ).send( { msg: "No email provided" } )  ;
+        }
 
         const user = await UserModel.findOne( { useremail } )  ;
 
@@ -85,6 +96,7 @@ const loginUser = async ( req , res ) => {
         });
        
     } catch ( error ) {
+
         res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
@@ -92,14 +104,21 @@ const loginUser = async ( req , res ) => {
 // User Logout
 
 const logoutUser = async ( req , res ) => {
+    
     try {
         const { accessToken , refreshToken } = req.body  ;
+
+        if ( !accessToken || !refreshToken ) 
+        {
+            return res.status( 401 ).send( { msg: "Tokens not provided" } )  ;
+        }
 
         await BlackListModel.insertMany( [ { "token" : accessToken } , { "token" : refreshToken } ] )  ;
 
         res.status( 200 ).send( { "msg" : "User has been logged out" }  )  ;
         
     } catch ( error ) {
+
         res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
@@ -107,8 +126,14 @@ const logoutUser = async ( req , res ) => {
 // User Account Password Change
 
 const changePassword = async ( req , res ) => {
+
     try {
-        const { useremail , olduserpassword , newuserpassword , accessToken , refreshToken } = req.body  ;
+        const { useremail , olduserpassword , userpassword , accessToken , refreshToken } = req.body  ;
+
+        if ( !accessToken || !refreshToken ) 
+        {
+            return res.status( 401 ).send( { msg: "Tokens not provided" } )  ;
+        }
 
         const user = await UserModel.findOne( { useremail } )  ;
 
@@ -125,7 +150,7 @@ const changePassword = async ( req , res ) => {
 
             if( result )
             {
-                bcrypt.hash( newuserpassword , 3 , async function ( err , hash ) {
+                bcrypt.hash( userpassword , 3 , async function ( err , hash ) {
 
                     if( err )
                     {
@@ -133,11 +158,11 @@ const changePassword = async ( req , res ) => {
                     }
                     else
                     {
-                        await UserModel.updateOne( { 'useremail' : useremail } , { 'userpassword' : hash } )  ;
+                        const updateduser = await UserModel.findByIdAndUpdate( user._id , { 'userpassword' : hash } , { new: true } )  ;
 
                         await BlackListModel.insertMany( [ { "token" : accessToken } , { "token" : refreshToken } ] )  ;
 
-                        return res.status( 200 ).send( { "msg" : "Password has been updated! User has been logged out" }  )  ;
+                        return res.status( 200 ).send( { "msg" : "Password has been updated! User has been logged out" , updateduser }  )  ;
                     }
                 } )  ;
             }
@@ -147,6 +172,7 @@ const changePassword = async ( req , res ) => {
         })  ;
  
     } catch ( error ) {
+
         res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
@@ -158,6 +184,11 @@ const deleteAccount = async ( req , res ) => {
     
     try {
         const { useremail , userpassword , accessToken , refreshToken } = req.body  ;
+
+        if ( !accessToken || !refreshToken ) 
+        {
+            return res.status( 401 ).send( { msg: "Tokens not provided" } )  ;
+        }
 
         const user = await UserModel.findOne( { useremail } )  ;
 
@@ -174,7 +205,7 @@ const deleteAccount = async ( req , res ) => {
 
             if( result )
             {
-                await UserModel.deleteOne( { 'useremail' : useremail } )  ;
+                await UserModel.deleteOne( { '_id' : user._id } )  ;
                 
                 await BlackListModel.insertMany( [ { "token" : accessToken } , { "token" : refreshToken } ] )  ;
 
@@ -186,6 +217,7 @@ const deleteAccount = async ( req , res ) => {
         })  ;
 
     } catch ( error ) {
+
         res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
@@ -197,6 +229,11 @@ const refreshToken = async ( req , res ) => {
     try {
 
         const { accessToken , refreshToken } = req.body  ;
+
+        if ( !accessToken || !refreshToken ) 
+        {
+            return res.status( 401 ).send( { msg: "Tokens not provided" } )  ;
+        }
 
         const item1 = await BlackListModel.findOne( { "token" : accessToken } )  ;
 
@@ -234,16 +271,23 @@ const refreshToken = async ( req , res ) => {
         });
 
     } catch ( error ) {
+        
         res.status( 500 ).send( { "error" : error } )  ;
     }
 }
 
 
-// Get All Users List - for Task Assigning Purpose - Authenticated Route
+// Get All Users List  ( for Task Assigning Purpose ) 
 
 const getAllUsers = async ( req , res ) => {
+
     try {
       const users = await UserModel.find()  ;
+
+      if( !users )
+      {
+           return res.status( 404 ).send( { "msg" : "No users account found" } )  ;
+      }
   
       res.status( 200 ).send( users )  ;
 
@@ -254,9 +298,10 @@ const getAllUsers = async ( req , res ) => {
 }
   
 
-// Get a Single User Data - Authenticated Route
+// Get a Single User Data 
 
 const getUser = async ( req , res ) => {
+
     try {
       const { requestemail } = req.body  ;
   
