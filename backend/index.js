@@ -12,6 +12,8 @@ const { connection } = require( './configs/db' )  ;
 
 const { userRouter } = require( './routes/userRoutes' )  ;
 
+const { noteRouter } = require( './routes/noteRoutes' )  ;
+
 
 
 const app = express()  ;
@@ -34,6 +36,8 @@ app.get( '/' , ( req , res ) => {
 
 
 app.use( '/user' , userRouter )  ;
+
+app.use( '/note' , noteRouter )  ;
 
 
 app.listen( PORT , async ()=>{

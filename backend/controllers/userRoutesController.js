@@ -13,6 +13,7 @@ const { BlackListModel } = require( '../models/BlackListModel' )  ;
 dotenv.config()  ;
 
 
+// User SignUp
 
 const registerUser = async ( req , res ) => {
 
@@ -40,7 +41,7 @@ const registerUser = async ( req , res ) => {
 
             await newuser.save()  ;
 
-            res.status(201).send( { "msg" : "New account has been created!", newuser } )  ;
+            res.status( 201 ).send( { "msg" : "New account has been created!" , newuser } )  ;
             
         })  ;
         
@@ -49,7 +50,9 @@ const registerUser = async ( req , res ) => {
     }
 }
 
-const loginUser = async ( req , res )=> {
+// User LogIn
+
+const loginUser = async ( req , res ) => {
 
     try {
         const { useremail , userpassword  } = req.body  ;
@@ -86,6 +89,8 @@ const loginUser = async ( req , res )=> {
     }
 } 
 
+// User Logout
+
 const logoutUser = async ( req , res ) => {
     try {
         const { accessToken , refreshToken } = req.body  ;
@@ -98,6 +103,8 @@ const logoutUser = async ( req , res ) => {
         res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
+
+// User Account Password Change
 
 const changePassword = async ( req , res ) => {
     try {
@@ -119,6 +126,7 @@ const changePassword = async ( req , res ) => {
             if( result )
             {
                 bcrypt.hash( newuserpassword , 3 , async function ( err , hash ) {
+
                     if( err )
                     {
                         return res.status( 500 ).send( { "error" : err } )  ;
@@ -131,7 +139,7 @@ const changePassword = async ( req , res ) => {
 
                         return res.status( 200 ).send( { "msg" : "Password has been updated! User has been logged out" }  )  ;
                     }
-                })  ;
+                } )  ;
             }
             
             res.status( 401 ).send( { "msg" : "Incorrect password" } )  ;
@@ -142,6 +150,9 @@ const changePassword = async ( req , res ) => {
         res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
+
+
+// User Account Deletion
 
 const deleteAccount = async ( req , res ) => {
     
@@ -167,7 +178,7 @@ const deleteAccount = async ( req , res ) => {
                 
                 await BlackListModel.insertMany( [ { "token" : accessToken } , { "token" : refreshToken } ] )  ;
 
-                return res.status( 200 ).send( { "msg" : "Accout has been deleted and user has been logged out" , user }  )  ;
+                return res.status( 200 ).send( { "msg" : "Account has been deleted and user has been logged out" , user }  )  ;
             }
             
             res.status( 401 ).send( { "msg" : "Incorrect password" } )  ;
@@ -178,6 +189,8 @@ const deleteAccount = async ( req , res ) => {
         res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
+
+// New Access Token Generation
 
 const refreshToken = async ( req , res ) => {
 
