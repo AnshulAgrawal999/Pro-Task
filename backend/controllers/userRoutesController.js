@@ -142,7 +142,7 @@ const changePassword = async ( req , res ) => {
 
         if( !user )
         {
-            return  res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;  
+            return res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;  
         }
         
         bcrypt.compare( olduserpassword , user.userpassword , async function( err , result ) {
@@ -293,12 +293,19 @@ const getAllUsers = async ( req , res ) => {
 
       if( !users )
       {
-           return res.status( 404 ).send( { "msg" : "No users account found" } )  ;
+          return res.status( 404 ).send( { "msg" : "No users account found" } )  ;
       }
-  
-      const usersdata = {}  ;
 
-      return res.status( 200 ).send( users )  ;
+      const userslist = []  ;
+  
+      for( let i = 0 ; i < users.length ; i++ )
+      {
+        const { userpassword , ...userdata  } = { ...users[i]._doc }  ;
+
+        userslist.push( userdata )  ;
+      }
+
+      return res.status( 200 ).send( userslist )  ;
 
     } catch ( error ) {
       
