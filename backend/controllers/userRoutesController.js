@@ -46,6 +46,8 @@ const registerUser = async ( req , res ) => {
 
             await newuser.save()  ;
 
+            delete newuser.userpassword  ;
+
             res.status( 201 ).send( { "msg" : "New account has been created!" , newuser } )  ;
             
         })  ;
