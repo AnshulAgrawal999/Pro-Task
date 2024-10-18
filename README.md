@@ -2,7 +2,7 @@
 
 ## What is ProTask about?
 
-ProTask is designed to empower efficient task and project management. Seamlessly organize, track, and prioritize tasks while overseeing the progress of complex projects. ProTask's intuitive interface fosters collaboration, ensuring your team stays aligned and projects stay on course. Elevate your project management experience with ProTask today.
+ProTask is designed for efficient task and project management. Seamlessly organize, track, and prioritize tasks while overseeing the progress of complex projects. ProTask's intuitive interface fosters collaboration, ensuring your team stays aligned and projects stay on course. Elevate your project management experience with ProTask.
 
 ## Features :-
 
