@@ -46,15 +46,15 @@ const registerUser = async ( req , res ) => {
 
             await newuser.save()  ;
 
-            delete newuser.userpassword  ;
+            const { userpassword , ...userdata  } = { ...newuser._doc }  ;
 
-            res.status( 201 ).send( { "msg" : "New account has been created!" , newuser } )  ;
+            return res.status( 201 ).send( { "msg" : "New account has been created!" , userdata } )  ;
             
         })  ;
         
     } catch ( error ) {
 
-        res.status( 500 ).send( { "error" : error } )  ;
+        return res.status( 500 ).send( { "error" : error } )  ;
     }
 }
 
@@ -63,6 +63,7 @@ const registerUser = async ( req , res ) => {
 const loginUser = async ( req , res ) => {
 
     try {
+
         const { useremail , userpassword  } = req.body  ;
 
         if ( !useremail ) 
@@ -93,13 +94,13 @@ const loginUser = async ( req , res ) => {
                 return res.status( 200 ).send( { "msg" :"Login successful!" , accessToken , refreshToken } )  ;
             }
            
-            res.status( 401 ).send( { "msg" : "Incorrect password!" } )  ;
+            return res.status( 401 ).send( { "msg" : "Incorrect password!" } )  ;
             
         });
        
     } catch ( error ) {
 
-        res.status( 500 ).send( { "error" : error } )  ;
+        return res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
 
@@ -117,11 +118,11 @@ const logoutUser = async ( req , res ) => {
 
         await BlackListModel.insertMany( [ { "token" : accessToken } , { "token" : refreshToken } ] )  ;
 
-        res.status( 200 ).send( { "msg" : "User has been logged out" }  )  ;
+        return res.status( 200 ).send( { "msg" : "User has been logged out" }  )  ;
         
     } catch ( error ) {
 
-        res.status( 500 ).send( { "error" : error } )  ;
+        return res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
 
@@ -162,20 +163,22 @@ const changePassword = async ( req , res ) => {
                     {
                         const updateduser = await UserModel.findByIdAndUpdate( user._id , { 'userpassword' : hash } , { new: true } )  ;
 
+                        const { userpassword , ...updateduserdata  } = { ...updateduser._doc }  ;
+
                         await BlackListModel.insertMany( [ { "token" : accessToken } , { "token" : refreshToken } ] )  ;
 
-                        return res.status( 200 ).send( { "msg" : "Password has been updated! User has been logged out" , updateduser }  )  ;
+                        return res.status( 200 ).send( { "msg" : "Password has been updated! User has been logged out" , updateduserdata }  )  ;
                     }
                 } )  ;
             }
             
-            res.status( 401 ).send( { "msg" : "Incorrect password" } )  ;
+            return res.status( 401 ).send( { "msg" : "Incorrect password" } )  ;
             
         })  ;
  
     } catch ( error ) {
 
-        res.status( 500 ).send( { "error" : error } )  ;
+        return res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
 
@@ -196,7 +199,7 @@ const deleteAccount = async ( req , res ) => {
 
         if( !user )
         {
-            return  res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;  
+            return res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;  
         }
         
         bcrypt.compare( userpassword , user.userpassword , async function( err , result ) {
@@ -211,16 +214,18 @@ const deleteAccount = async ( req , res ) => {
                 
                 await BlackListModel.insertMany( [ { "token" : accessToken } , { "token" : refreshToken } ] )  ;
 
-                return res.status( 200 ).send( { "msg" : "Account has been deleted and user has been logged out" , user }  )  ;
+                const { userpassword , ...userdata  } = { ...user._doc }  ;
+
+                return res.status( 200 ).send( { "msg" : "Account has been deleted and user has been logged out" , userdata }  )  ;
             }
             
-            res.status( 401 ).send( { "msg" : "Incorrect password" } )  ;
+            return res.status( 401 ).send( { "msg" : "Incorrect password" } )  ;
             
         })  ;
 
     } catch ( error ) {
 
-        res.status( 500 ).send( { "error" : error } )  ;
+        return res.status( 500 ).send( { "error" : error } )  ;
     }
 } 
 
@@ -267,14 +272,14 @@ const refreshToken = async ( req , res ) => {
                     return res.status( 500 ).send( { "error" : err } )  ;    
                 }
                 
-                res.status( 400 ).send( { "msg" : "Previous accessToken still active" } )  ;
+                return res.status( 400 ).send( { "msg" : "Previous accessToken still active" } )  ;
                 
             });
         });
 
     } catch ( error ) {
         
-        res.status( 500 ).send( { "error" : error } )  ;
+        return res.status( 500 ).send( { "error" : error } )  ;
     }
 }
 
@@ -291,11 +296,13 @@ const getAllUsers = async ( req , res ) => {
            return res.status( 404 ).send( { "msg" : "No users account found" } )  ;
       }
   
-      res.status( 200 ).send( users )  ;
+      const usersdata = {}  ;
+
+      return res.status( 200 ).send( users )  ;
 
     } catch ( error ) {
       
-      res.status( 500 ).send( { "error" : error } )  ;
+        return res.status( 500 ).send( { "error" : error } )  ;
     }
 }
   
@@ -314,11 +321,13 @@ const getUser = async ( req , res ) => {
          return res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;
       }
   
-      res.status( 200 ).send( user )  ;
+      const { userpassword , ...userdata  } = { ...user._doc }  ;
+
+      return res.status( 200 ).send( userdata )  ;
 
     } catch ( error ) {
       
-      res.status( 500 ).send( { "error" : error } )  ;
+        return res.status( 500 ).send( { "error" : error } )  ;
     }
   }
 

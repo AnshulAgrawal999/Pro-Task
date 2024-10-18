@@ -32,11 +32,11 @@ const addNote = async (req, res) => {
 
       await UserModel.findByIdAndUpdate( user._id , user )  ;
   
-      res.status( 201 ).send( { "msg" : "Note saved successfully" , note } )  ;
+      return res.status( 201 ).send( { "msg" : "Note saved successfully" , note } )  ;
 
     } catch ( error ) {
 
-      res.status( 500 ).send( { "error" : error } )  ;
+      return res.status( 500 ).send( { "error" : error } )  ;
     }
   }
 
@@ -62,11 +62,11 @@ const getAllNotes = async ( req , res ) => {
             return res.status( 404 ).send( { "msg" : "No notes found" } )  ;
         }
 
-        res.status( 200 ).send( notes )  ;
+        return res.status( 200 ).send( notes )  ;
 
     } catch ( error ) {
 
-        res.status( 500 ).send( { error } )  ;
+        return res.status( 500 ).send( { error } )  ;
     } 
 }
 
@@ -84,11 +84,11 @@ const getNote = async ( req , res ) => {
             return res.status( 404 ).send( { "msg" : "No note found" } )  ;
         }
 
-        res.status( 200 ).send( note )  ;
+        return res.status( 200 ).send( note )  ;
 
     } catch (error) {
 
-        res.status( 500 ).send( { error } )  ;
+        return res.status( 500 ).send( { error } )  ;
     } 
 }
 
