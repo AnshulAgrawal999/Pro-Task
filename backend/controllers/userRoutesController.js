@@ -126,61 +126,60 @@ const logoutUser = async ( req , res ) => {
     }
 } 
 
-// User Account Password Change
+// // User Account Password Change
 
-const changePassword = async ( req , res ) => {
+// const changePassword = async ( req , res ) => {
 
-    try {
-        const { useremail , olduserpassword , userpassword , accessToken , refreshToken } = req.body  ;
+//     try {
+//         const { useremail , olduserpassword , userpassword , accessToken , refreshToken } = req.body  ;
 
-        if ( !accessToken || !refreshToken ) 
-        {
-            return res.status( 401 ).send( { msg: "Tokens not provided" } )  ;
-        }
+//         if ( !accessToken || !refreshToken ) 
+//         {
+//             return res.status( 401 ).send( { msg: "Tokens not provided" } )  ;
+//         }
 
-        const user = await UserModel.findOne( { useremail } )  ;
+//         const user = await UserModel.findOne( { useremail } )  ;
 
-        if( !user )
-        {
-            return res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;  
-        }
+//         if( !user )
+//         {
+//             return res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;  
+//         }
         
-        bcrypt.compare( olduserpassword , user.userpassword , async function( err , result ) {
-            if( err )
-            {
-                return res.status( 500 ).send( { "error" : err } )  ;
-            }
+//         bcrypt.compare( olduserpassword , user.userpassword , async function( err , result ) {
+//             if( err )
+//             {
+//                 return res.status( 500 ).send( { "error" : err } )  ;
+//             }
 
-            if( result )
-            {
-                bcrypt.hash( userpassword , 3 , async function ( err , hash ) {
+//             if( result )
+//             {
+//                 bcrypt.hash( userpassword , 3 , async function ( err2 , hash ) {
 
-                    if( err )
-                    {
-                        return res.status( 500 ).send( { "error" : err } )  ;
-                    }
-                    else
-                    {
-                        const updateduser = await UserModel.findByIdAndUpdate( user._id , { 'userpassword' : hash } , { new: true } )  ;
+//                     if( err2 )
+//                     {
+//                         return res.status( 500 ).send( { "error" : err2 } )  ;
+//                     }
+                    
+//                     const updateduser = await UserModel.findByIdAndUpdate( user._id , { 'userpassword' : hash } , { new: true } )  ;
 
-                        const { userpassword , ...updateduserdata  } = { ...updateduser._doc }  ;
+//                     const { userpassword , ...updateduserdata  } = { ...updateduser._doc }  ;
 
-                        await BlackListModel.insertMany( [ { "token" : accessToken } , { "token" : refreshToken } ] )  ;
+//                     await BlackListModel.insertMany( [ { "token" : accessToken } , { "token" : refreshToken } ] )  ;
 
-                        return res.status( 200 ).send( { "msg" : "Password has been updated! User has been logged out" , updateduserdata }  )  ;
-                    }
-                } )  ;
-            }
+//                     return res.status( 200 ).send( { "msg" : "Password has been updated! User has been logged out" , updateduserdata }  )  ;
+                    
+//                 } )  ;
+//             }
             
-            return res.status( 401 ).send( { "msg" : "Incorrect password" } )  ;
+//             return res.status( 401 ).send( { "msg" : "Incorrect password" } )  ;
             
-        })  ;
+//         })  ;
  
-    } catch ( error ) {
+//     } catch ( error ) {
 
-        return res.status( 500 ).send( { "error" : error } )  ;
-    }
-} 
+//         return res.status( 500 ).send( { "error" : error } )  ;
+//     }
+// } 
 
 
 // User Account Deletion
@@ -251,25 +250,25 @@ const refreshToken = async ( req , res ) => {
             return res.status( 401 ).send( { "msg" : "User is logged out" } )  ;   
         }
        
-        jwt.verify( refreshToken , process.env.refreshSecretKey , function( error ) 
+        jwt.verify( refreshToken , process.env.refreshSecretKey , function( err ) 
         {
-            if ( error )
+            if ( err )
             {
-                return res.status( 500 ).send( { "error" : error } )  ;
+                return res.status( 500 ).send( { "error" : err } )  ;
             }
 
-            jwt.verify( accessToken , process.env.accessSecretKey , function( err , decoded ) 
+            jwt.verify( accessToken , process.env.accessSecretKey , function( err2 , decoded ) 
             {
-                if( err )
+                if( err2 )
                 {
-                    if ( err.name === 'TokenExpiredError' )
+                    if ( err2.name === 'TokenExpiredError' )
                     {
                         const newaccessToken = jwt.sign( { 'useremail' : decoded.useremail } , process.env.accessSecretKey , { expiresIn: '100m' } )   ;
             
                         return res.status( 200 ).send( { "newaccessToken" : newaccessToken } )  ;
                     }
                         
-                    return res.status( 500 ).send( { "error" : err } )  ;    
+                    return res.status( 500 ).send( { "error" : err2 } )  ;    
                 }
                 
                 return res.status( 400 ).send( { "msg" : "Previous accessToken still active" } )  ;
@@ -338,4 +337,4 @@ const getUser = async ( req , res ) => {
     }
   }
 
-module.exports = { registerUser , loginUser , logoutUser , changePassword , deleteAccount , refreshToken , getAllUsers , getUser }  ;
+module.exports = { registerUser , loginUser , logoutUser , deleteAccount , refreshToken , getAllUsers , getUser }  ;

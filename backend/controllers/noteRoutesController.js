@@ -55,14 +55,14 @@ const getAllNotes = async ( req , res ) => {
             return res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;
         }
 
-        const notes = await UserModel.findById( user._id ).populate( "note" ).noteObjectId  ;
+        const notes = await UserModel.findById( user._id ).populate( 'noteObjectId' )  ;
 
         if( !notes )
         {
             return res.status( 404 ).send( { "msg" : "No notes found" } )  ;
         }
 
-        return res.status( 200 ).send( notes )  ;
+        return res.status( 200 ).send( notes.noteObjectId  )  ;
 
     } catch ( error ) {
 

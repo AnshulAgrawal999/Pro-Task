@@ -2,9 +2,9 @@ const mongoose = require( 'mongoose' )  ;
 
 const noteSchema = mongoose.Schema(
 {
-    title: { type : String , minlength : 3 , required : true } ,
-    description : { type : String , minlength : 4 , required: true } ,
-    note : { type: String , minlength : 4 } ,
+    title: { type : String , required : true } ,
+    description : { type : String , required: true } ,
+    note : { type: String } ,
     userObjectId : { type : mongoose.Schema.Types.ObjectId , ref : 'user' , required : true }
 }
 )
