@@ -75,9 +75,16 @@ const getAllNotes = async ( req , res ) => {
 const getNote = async ( req , res ) => {
     try {
 
-        const { noteId } = req.body  ;
+        const { noteId , useremail } = req.body  ;
 
         const note = await NoteModel.findById( noteId )  ;
+
+        const user = await UserModel.findOne( { useremail } )  ;
+
+        if( !user )
+        {
+            return res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;
+        }
 
         if( !note )
         {
@@ -95,7 +102,14 @@ const getNote = async ( req , res ) => {
 const updateNote = async ( req , res ) => {
     try {
 
-        const { noteId } = req.body  ;
+        const { noteId , useremail } = req.body  ;
+
+        const user = await UserModel.findOne( { useremail } )  ;
+
+        if( !user )
+        {
+            return res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;
+        }
 
         const note = await NoteModel.findById( noteId )  ;
 
@@ -122,7 +136,14 @@ const updateNote = async ( req , res ) => {
 const deleteNote = async ( req , res ) => {
     try {
 
-        const { noteId } = req.body  ;
+        const { noteId , useremail } = req.body  ;
+
+        const user = await UserModel.findOne( { useremail } )  ;
+
+        if( !user )
+        {
+            return res.status( 404 ).send( { "msg" : "No user account found with this email" } )  ;
+        }
 
         const note = await NoteModel.findById( noteId )  ;
 
@@ -132,6 +153,14 @@ const deleteNote = async ( req , res ) => {
         }
 
         await NoteModel.deleteOne( { '_id' : noteId } )  ;
+
+        const index = user.noteObjectId.indexOf( note._id )  ;
+
+        if ( index > -1 ) { 
+            user.noteObjectId.splice( index , 1 )  ; 
+        }
+
+        await UserModel.findByIdAndUpdate( user._id , user )  ;
 
         return res.status( 200 ).send( { "msg" : "Note deleted" } )  ;
 

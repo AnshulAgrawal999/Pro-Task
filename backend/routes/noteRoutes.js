@@ -15,6 +15,6 @@ noteRouter.get( '/getnote' , auth , getNote )  ;
 
 noteRouter.patch( '/updatenote' , auth , updateNote )  ;
 
-noteRouter.get( '/deletenote' , auth , deleteNote )  ;
+noteRouter.delete( '/deletenote' , auth , deleteNote )  ;
 
 module.exports = { noteRouter }  ;
