@@ -2,7 +2,7 @@ const express = require( 'express' )  ;
 
 const { auth } = require( '../middleware/auth' )  ;
 
-const { addNote , getAllNotes , getNote } = require( '../controllers/noteRoutesController' )  ;
+const { addNote , getAllNotes , getNote , updateNote , deleteNote } = require( '../controllers/noteRoutesController' )  ;
 
 
 const noteRouter = express.Router()  ;
@@ -13,5 +13,8 @@ noteRouter.get( '/getallnotes' , auth , getAllNotes )  ;
 
 noteRouter.get( '/getnote' , auth , getNote )  ;
 
+noteRouter.patch( '/updatenote' , auth , updateNote )  ;
+
+noteRouter.get( '/deletenote' , auth , deleteNote )  ;
 
 module.exports = { noteRouter }  ;

@@ -5,7 +5,7 @@ const userSchema = mongoose.Schema(
     username : { type : String , required : true } ,
     useremail : { type : String , required : true } ,
     userpassword : { type : String , required : true } ,
-    noteObjectId: [
+    noteObjectId : [
         {
           type: mongoose.Schema.Types.ObjectId ,
           ref: "note" ,

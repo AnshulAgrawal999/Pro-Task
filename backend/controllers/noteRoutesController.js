@@ -92,5 +92,54 @@ const getNote = async ( req , res ) => {
     } 
 }
 
+const updateNote = async ( req , res ) => {
+    try {
 
-module.exports = { addNote , getAllNotes , getNote }  ;
+        const { noteId } = req.body  ;
+
+        const note = await NoteModel.findById( noteId )  ;
+
+        if( !note )
+        {
+            return res.status( 404 ).send( { "msg" : "No note found" } )  ;
+        }
+
+        const updatednote = await NoteModel.findByIdAndUpdate( noteId , req.body , { new: true } )  ;
+
+        if( !updatednote )
+        {
+            return res.status( 500 ).send( { "msg" : "Note was not able to update" } )  ;
+        }
+
+        return res.status( 200 ).send( { "msg" : "Note Updated" , updatednote } )  ;
+
+    } catch (error) {
+
+        return res.status( 500 ).send( { error } )  ;
+    } 
+}
+
+const deleteNote = async ( req , res ) => {
+    try {
+
+        const { noteId } = req.body  ;
+
+        const note = await NoteModel.findById( noteId )  ;
+
+        if( !note )
+        {
+            return res.status( 404 ).send( { "msg" : "No note found" } )  ;
+        }
+
+        await NoteModel.deleteOne( { '_id' : noteId } )  ;
+
+        return res.status( 200 ).send( { "msg" : "Note deleted" } )  ;
+
+    } catch (error) {
+
+        return res.status( 500 ).send( { error } )  ;
+    } 
+}
+
+
+module.exports = { addNote , getAllNotes , getNote , updateNote , deleteNote }  ;
